@@ -56,7 +56,7 @@ async def startup_event():
     global rag_system, document_loader, vector_store
     
     try:
-        print("🚀 Initializing RAG System...")
+        print("Initializing RAG System...")
         
         # Initialize components
         document_loader = DocumentLoader()
@@ -66,13 +66,13 @@ async def startup_event():
         # Connect components
         rag_system.set_components(vector_store, document_loader)
         
-        print("✅ RAG System initialized successfully!")
-        print(f"🤖 Using AI provider: {rag_system.ai_config['provider']}")
-        print(f"💰 Free to use: {rag_system.ai_config['is_free']}")
+        print("RAG System initialized successfully!")
+        print(f"Using AI provider: {rag_system.ai_config['provider']}")
+        print(f"Free to use: {rag_system.ai_config['is_free']}")
         
     except Exception as e:
-        print(f"❌ Failed to initialize RAG System: {e}")
-        print("💡 Make sure Ollama is running or check your configuration")
+        print(f"Failed to initialize RAG System: {e}")
+        print("Make sure Ollama is running or check your configuration")
 
 @app.get("/")
 async def root():

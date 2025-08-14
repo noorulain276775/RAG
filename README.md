@@ -4,13 +4,13 @@ A comprehensive **Retrieval-Augmented Generation (RAG)** system with a modern Ne
 
 ##  **Features**
 
-- ** Document Upload**: Support for PDF, TXT, DOC, Markdown, and code files
-- ** AI-Powered Q&A**: Ask questions about your documents with full context
-- ** Smart Retrieval**: Vector-based similarity search for relevant content
-- ** Interactive Chat**: Modern chat interface with source citations
-- ** Responsive Design**: Beautiful Next.js frontend with Tailwind CSS
-- ** Fast API**: FastAPI backend with real-time document processing
-- ** Secure**: OpenAI API integration with environment-based configuration
+- **Document Upload**: Support for PDF, TXT, DOC, Markdown, and code files
+- **AI-Powered Q&A**: Ask questions about your documents with full context
+- **Smart Retrieval**: Vector-based similarity search for relevant content
+- **Interactive Chat**: Modern chat interface with source citations
+- **Responsive Design**: Beautiful Next.js frontend with Tailwind CSS
+- **Fast API**: FastAPI backend with real-time document processing
+- **Secure**: Ollama integration with environment-based configuration
 
 ## **Architecture**
 
@@ -235,4 +235,4 @@ npm run dev
 ---
 
 
-*Built using Next.js, Python (FastAPI), and OpenAI*
+*Built using Next.js, Python (FastAPI), and Ollama*

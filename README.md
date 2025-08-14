@@ -235,4 +235,4 @@ npm run dev
 ---
 
 
-*Built using Next.js, Python (FastAPI), and Ollama*
+*Built using Next.js (TypeScript), Python (FastAPI), and Ollama*

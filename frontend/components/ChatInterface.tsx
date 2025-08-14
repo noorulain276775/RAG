@@ -60,7 +60,7 @@ export default function ChatInterface() {
       const mockResponse: Message = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
-        content: `I understand you're asking about "${inputValue}". Based on the documents you've uploaded, I can provide you with a comprehensive answer. The RAG system works by:\n\n1. **Retrieving** relevant document chunks\n2. **Analyzing** the context\n3. **Generating** accurate responses\n\nTo get real answers, make sure you have documents uploaded and your OpenAI API key configured.`,
+        content: `I understand you're asking about "${inputValue}". Based on the documents you've uploaded, I can provide you with a comprehensive answer. The RAG system works by:\n\n1. **Retrieving** relevant document chunks\n2. **Analyzing** the context\n3. **Generating** accurate responses\n\nTo get real answers, make sure you have documents uploaded. Your system is using Ollama (free local AI) - no API keys required!`,
         timestamp: new Date(),
         sources: [
           {

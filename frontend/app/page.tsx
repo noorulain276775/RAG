@@ -87,9 +87,9 @@ export default function Home() {
         {/* Tab Content */}
         <div className="animate-fade-in">
           {activeTab === 'chat' && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
               {/* Document Upload Sidebar */}
-              <div className="lg:col-span-1">
+              <div className="xl:col-span-1 space-y-6">
                 <DocumentUpload 
                   onUpload={handleDocumentUpload}
                   isLoading={isLoading}
@@ -98,7 +98,7 @@ export default function Home() {
               </div>
               
               {/* Chat Interface */}
-              <div className="lg:col-span-2">
+              <div className="xl:col-span-3">
                 <ChatInterface />
               </div>
             </div>
@@ -117,31 +117,49 @@ export default function Home() {
             <div className="card">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">System Settings</h2>
               <div className="space-y-4">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-green-800">Free Local AI Active</h3>
+                      <p className="text-sm text-green-700 mt-1">
+                        Your system is using Ollama with local AI models. No API keys or costs required!
+                      </p>
+                    </div>
+                  </div>
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    OpenAI API Key
+                    AI Provider
                   </label>
-                  <input
-                    type="password"
-                    placeholder="sk-..."
-                    className="input-field"
-                  />
+                  <select className="input-field" disabled>
+                    <option value="ollama">Ollama (Local - Free)</option>
+                  </select>
                   <p className="text-sm text-gray-500 mt-1">
-                    Your API key is stored locally and never sent to our servers.
+                    Currently using Ollama with llama2 model locally.
                   </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Model Selection
+                    Embedding Provider
                   </label>
-                  <select className="input-field">
-                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                    <option value="gpt-4">GPT-4</option>
+                  <select className="input-field" disabled>
+                    <option value="sentence-transformers">Sentence Transformers (Local - Free)</option>
                   </select>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Using local sentence-transformers for document embeddings.
+                  </p>
                 </div>
-                <button className="btn-primary">
-                  Save Settings
-                </button>
+                <div className="text-sm text-gray-600">
+                  <p>✅ No API keys required</p>
+                  <p>✅ Completely free to use</p>
+                  <p>✅ Runs locally on your machine</p>
+                  <p>✅ No internet dependency after setup</p>
+                </div>
               </div>
             </div>
           )}

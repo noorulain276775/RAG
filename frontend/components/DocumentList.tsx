@@ -77,7 +77,7 @@ export default function DocumentList({ documents }: DocumentListProps) {
   }
 
   return (
-    <div className="card">
+    <div className="card max-w-full overflow-hidden">
       <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center justify-between">
         <div className="flex items-center">
           <FileText className="h-5 w-5 mr-2 text-primary-600" />
@@ -85,34 +85,34 @@ export default function DocumentList({ documents }: DocumentListProps) {
         </div>
       </h3>
 
-      <div className="space-y-3">
+      <div className="space-y-3 max-w-full">
         {documents.map((doc) => (
           <div
             key={doc.id}
-            className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors cursor-pointer"
+            className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors cursor-pointer w-full"
             onClick={() => setSelectedDocument(doc)}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <span className="text-lg">{getFileIcon(doc.type)}</span>
+            <div className="flex items-start justify-between">
+              <div className="flex items-start space-x-3 flex-1 min-w-0">
+                <span className="text-lg flex-shrink-0">{getFileIcon(doc.type)}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                  <p className="text-sm font-medium text-gray-900 break-words leading-tight">
                     {doc.name}
                   </p>
-                  <div className="flex items-center space-x-4 text-xs text-gray-500 mt-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-xs text-gray-500 mt-1 space-y-1 sm:space-y-0">
                     <span className="flex items-center">
-                      <File className="h-3 w-3 mr-1" />
-                      {formatFileSize(doc.size)}
+                      <File className="h-3 w-3 mr-1 flex-shrink-0" />
+                      <span className="truncate">{formatFileSize(doc.size)}</span>
                     </span>
                     <span className="flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      {formatDate(doc.uploadedAt)}
+                      <Calendar className="h-3 w-3 mr-1 flex-shrink-0" />
+                      <span className="truncate">{formatDate(doc.uploadedAt)}</span>
                     </span>
                   </div>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 flex-shrink-0">
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(doc.status)}`}>
                   {doc.status}
                 </span>

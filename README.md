@@ -1,218 +1,230 @@
-# 🤖 AI RAG System
+# 🤖 RAG System - AI-Powered Document Q&A
 
-A powerful **Retrieval-Augmented Generation (RAG)** system built with Python, combining document processing, vector search, and AI-powered question answering.
+A comprehensive **Retrieval-Augmented Generation (RAG)** system with a modern Next.js frontend and Python backend. Upload documents and ask questions with AI-powered context awareness.
 
-## ✨ Features
+## 🚀 **Features**
 
-- **📚 Multi-format Document Support**: PDF, TXT, MD, Python, JavaScript, HTML, CSS
-- **🔍 Vector-based Search**: ChromaDB with OpenAI embeddings for semantic search
-- **🤖 AI-powered Responses**: OpenAI GPT models for intelligent question answering
-- **💻 Multiple Interfaces**: Web UI (Streamlit) and Command Line Interface
-- **📊 Document Chunking**: Intelligent text splitting with configurable overlap
-- **🎯 Source Attribution**: Always see where answers come from
-- **⚡ Fast & Efficient**: Optimized for performance and scalability
+- **📄 Document Upload**: Support for PDF, TXT, DOC, Markdown, and code files
+- **🧠 AI-Powered Q&A**: Ask questions about your documents with full context
+- **🔍 Smart Retrieval**: Vector-based similarity search for relevant content
+- **💬 Interactive Chat**: Modern chat interface with source citations
+- **📱 Responsive Design**: Beautiful Next.js frontend with Tailwind CSS
+- **⚡ Fast API**: FastAPI backend with real-time document processing
+- **🔐 Secure**: OpenAI API integration with environment-based configuration
 
-## 🚀 Quick Start
+## 🏗️ **Architecture**
 
-### 1. Installation
-
-```bash
-# Clone the repository
-git clone <your-repo-url>
-cd RAG
-
-# Install dependencies
-pip install -r requirements.txt
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Next.js       │    │   FastAPI       │    │   RAG System    │
+│   Frontend      │◄──►│   Backend       │◄──►│   (Python)      │
+│   (Port 3000)   │    │   (Port 8000)   │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-### 2. Configuration
-
-Create a `.env` file in the project root:
-
-```env
-# OpenAI API Configuration
-OPENAI_API_KEY=your_openai_api_key_here
-OPENAI_MODEL=gpt-3.5-turbo
-
-# Vector Database Configuration
-CHROMA_PERSIST_DIRECTORY=./chroma_db
-
-# Document Processing
-CHUNK_SIZE=1000
-CHUNK_OVERLAP=200
-```
-
-### 3. Get Your OpenAI API Key
-
-1. Visit [OpenAI Platform](https://platform.openai.com/)
-2. Create an account or sign in
-3. Navigate to API Keys section
-4. Create a new API key
-5. Copy the key to your `.env` file
-
-### 4. Run the System
-
-#### Web Interface (Recommended)
-```bash
-streamlit run streamlit_app.py
-```
-
-#### Command Line Interface
-```bash
-# Interactive mode
-python cli_app.py
-
-# Single query
-python cli_app.py -q "What is artificial intelligence?"
-
-# Load documents
-python cli_app.py -f document1.pdf document2.txt
-
-# Load sample documents
-python cli_app.py --sample
-```
-
-## 🎯 How It Works
-
-### 1. **Document Processing**
-- Documents are loaded and chunked into smaller pieces
-- Each chunk maintains context with configurable overlap
-- Metadata is preserved for source tracking
-
-### 2. **Vector Embeddings**
-- Text chunks are converted to high-dimensional vectors
-- OpenAI's `text-embedding-ada-002` model creates semantic representations
-- Vectors are stored in ChromaDB for fast similarity search
-
-### 3. **Retrieval**
-- User questions are converted to query vectors
-- Similarity search finds the most relevant document chunks
-- Top-k results are selected based on semantic similarity
-
-### 4. **Generation**
-- Retrieved chunks provide context for the AI model
-- OpenAI GPT generates accurate, contextual answers
-- Sources are tracked and displayed for transparency
-
-## 📁 Project Structure
+## 📁 **Project Structure**
 
 ```
 RAG/
-├── config.py              # Configuration management
-├── document_loader.py     # Document processing and chunking
-├── vector_store.py        # Vector database operations
-├── rag_system.py          # Core RAG logic
-├── streamlit_app.py       # Web interface
-├── cli_app.py            # Command line interface
-├── requirements.txt       # Python dependencies
-└── README.md             # This file
+├── frontend/                 # Next.js Frontend
+│   ├── app/                 # App Router
+│   ├── components/          # React Components
+│   ├── package.json         # Frontend Dependencies
+│   └── tailwind.config.js   # Tailwind Configuration
+├── backend/                  # FastAPI Backend
+│   ├── main.py              # FastAPI Application
+│   ├── run.py               # Backend Runner
+│   └── requirements.txt     # Backend Dependencies
+├── document_loader.py        # Document Processing
+├── vector_store.py          # Vector Database
+├── rag_system.py            # Core RAG Logic
+├── config.py                # Configuration
+├── requirements.txt          # Python Dependencies
+└── README.md                # This File
 ```
 
-## 🔧 Configuration Options
+## 🛠️ **Quick Start**
 
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `CHUNK_SIZE` | 1000 | Number of characters per document chunk |
-| `CHUNK_OVERLAP` | 200 | Overlap between consecutive chunks |
-| `TOP_K_RESULTS` | 3 | Number of relevant documents to retrieve |
-| `TEMPERATURE` | 0.7 | AI model creativity (0.0 = focused, 1.0 = creative) |
+### **1. Setup Environment**
 
-## 💡 Usage Examples
-
-### Web Interface
-1. Open the Streamlit app
-2. Click "Initialize RAG System"
-3. Upload documents or load sample data
-4. Ask questions in the chat interface
-5. View sources and system statistics
-
-### Command Line
 ```bash
-# Initialize and check stats
-python cli_app.py --init
+# Clone or navigate to project directory
+cd RAG
 
-# Load documents and start chatting
-python cli_app.py -f my_documents.pdf
-# Then type questions interactively
-
-# Quick single question
-python cli_app.py -q "What are the main benefits of RAG?"
+# Create .env file with your OpenAI API key
+echo "OPENAI_API_KEY=sk-your_actual_key_here" > .env
 ```
 
-## 🛠️ Advanced Features
+### **2. Install Python Dependencies**
 
-### Custom Document Types
-The system automatically detects file types and uses appropriate loaders:
-- **PDF**: PyPDF loader with text extraction
-- **Text**: Direct text loading with encoding support
-- **Code**: Syntax-aware processing for programming languages
-- **Other**: Unstructured loader for various formats
-
-### Vector Store Management
-- Persistent storage with ChromaDB
-- Automatic collection management
-- Document deletion and clearing capabilities
-- Performance statistics and monitoring
-
-### Prompt Engineering
-- Configurable prompt templates
-- Context-aware question answering
-- Source attribution and transparency
-- Customizable response generation
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-1. **"OpenAI API key not found"**
-   - Ensure your `.env` file exists and contains the API key
-   - Check that the key is valid and has sufficient credits
-
-2. **"No relevant documents found"**
-   - Load documents first using the file uploader or CLI
-   - Try the "Load Sample Documents" feature to test the system
-
-3. **"Vector store initialization failed"**
-   - Check disk space and permissions
-   - Try clearing the `./chroma_db` directory
-
-4. **Slow performance**
-   - Reduce `CHUNK_SIZE` for faster processing
-   - Use smaller documents or fewer files
-   - Check your internet connection for API calls
-
-### Performance Tips
-
-- **Chunk Size**: Smaller chunks (500-1000) for precise answers, larger (1500-2000) for context
-- **Overlap**: 10-20% overlap maintains context between chunks
-- **Document Types**: Text files process faster than PDFs
-- **Batch Processing**: Upload multiple documents at once for efficiency
-
-## 🚀 Deployment
-
-### Local Development
 ```bash
-# Install in development mode
-pip install -e .
-
-# Run with auto-reload
-streamlit run streamlit_app.py --server.runOnSave true
-```
-
-### Production Deployment
-```bash
-# Install production dependencies
+# Install Python packages
 pip install -r requirements.txt
 
-# Set production environment variables
-export OPENAI_API_KEY=your_production_key
-export CHROMA_PERSIST_DIRECTORY=/data/chroma_db
-
-# Run with production settings
-streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+# Install backend dependencies
+pip install -r backend/requirements.txt
 ```
 
-## 🤝 Contributing
+### **3. Start Backend**
+
+```bash
+# Start FastAPI backend
+cd backend
+python run.py
+```
+
+**Backend will be available at:** http://localhost:8000
+**API Docs:** http://localhost:8000/docs
+
+### **4. Start Frontend**
+
+```bash
+# In a new terminal, install frontend dependencies
+cd frontend
+npm install
+
+# Start Next.js development server
+npm run dev
+```
+
+**Frontend will be available at:** http://localhost:3000
+
+## 🎯 **How It Works**
+
+### **Document Processing Pipeline:**
+
+1. **📤 Upload**: Drag & drop or select files through the web interface
+2. **✂️ Chunking**: Documents are split into smaller, manageable pieces
+3. **🔢 Embedding**: Text chunks are converted to numerical vectors using OpenAI
+4. **💾 Storage**: Vectors are stored in ChromaDB for fast retrieval
+5. **🔍 Retrieval**: When you ask a question, relevant chunks are found
+6. **🤖 Generation**: AI generates answers using retrieved context
+
+### **Context Awareness:**
+
+- **Before**: AI gives generic answers
+- **After**: AI provides specific, document-based responses with sources
+
+## 📱 **Frontend Features**
+
+### **Main Interface:**
+- **Chat Tab**: Interactive Q&A with your documents
+- **Documents Tab**: Manage uploaded files
+- **Settings Tab**: Configure API keys and models
+
+### **Document Upload:**
+- Drag & drop support
+- Multiple file selection
+- Progress indicators
+- File type validation
+
+### **Chat Interface:**
+- Real-time messaging
+- Source citations
+- Copy responses
+- Loading states
+
+## 🔌 **API Endpoints**
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/health` | GET | System health check |
+| `/api/upload` | POST | Upload documents |
+| `/api/chat` | POST | Ask questions |
+| `/api/documents` | GET | List documents |
+| `/api/sample-documents` | POST | Load sample data |
+| `/api/system-info` | GET | System configuration |
+
+## 🧪 **Testing the System**
+
+### **1. Load Sample Documents**
+```bash
+# Via API
+curl -X POST http://localhost:8000/api/sample-documents
+
+# Via Frontend
+# Go to Documents tab → Click "Load Sample Documents"
+```
+
+### **2. Ask Questions**
+```bash
+# Via API
+curl -X POST http://localhost:8000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"question": "What is the difference between AI and ML?"}'
+
+# Via Frontend
+# Go to Chat tab → Type your question
+```
+
+## ⚙️ **Configuration**
+
+### **Environment Variables (.env):**
+```env
+OPENAI_API_KEY=sk-your_actual_key_here
+OPENAI_MODEL=gpt-3.5-turbo
+CHROMA_PERSIST_DIRECTORY=./chroma_db
+CHUNK_SIZE=1000
+CHUNK_OVERLAP=200
+TOP_K_RESULTS=3
+TEMPERATURE=0.7
+```
+
+### **Frontend Configuration:**
+- API endpoint: `http://localhost:8000`
+- CORS enabled for development
+- Responsive design with Tailwind CSS
+
+## 🚨 **Troubleshooting**
+
+### **Common Issues:**
+
+1. **"OpenAI API key not found"**
+   - Create `.env` file in project root
+   - Add your actual OpenAI API key
+
+2. **"Module not found" errors**
+   - Install dependencies: `pip install -r requirements.txt`
+   - Install backend deps: `pip install -r backend/requirements.txt`
+
+3. **Frontend can't connect to backend**
+   - Ensure backend is running on port 8000
+   - Check CORS configuration
+   - Verify API endpoints
+
+4. **Documents not processing**
+   - Check file format support
+   - Verify OpenAI API key is valid
+   - Check backend logs for errors
+
+### **Debug Mode:**
+```bash
+# Backend with verbose logging
+cd backend
+python run.py --log-level debug
+
+# Frontend with detailed errors
+cd frontend
+npm run dev
+```
+
+## 🔮 **Future Enhancements**
+
+- [ ] **User Authentication**: Secure document access
+- [ ] **Document Versioning**: Track document changes
+- [ ] **Advanced Search**: Filters and sorting
+- [ ] **Export Features**: Download processed documents
+- [ ] **Real-time Updates**: WebSocket notifications
+- [ ] **Mobile App**: React Native version
+
+## 📚 **Learning Resources**
+
+- **RAG Concepts**: [LangChain RAG Guide](https://python.langchain.com/docs/use_cases/question_answering/)
+- **Next.js**: [Official Documentation](https://nextjs.org/docs)
+- **FastAPI**: [User Guide](https://fastapi.tiangolo.com/)
+- **Vector Databases**: [ChromaDB Docs](https://docs.trychroma.com/)
+
+## 🤝 **Contributing**
 
 1. Fork the repository
 2. Create a feature branch
@@ -220,25 +232,18 @@ streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0
 4. Add tests if applicable
 5. Submit a pull request
 
-## 📄 License
+## 📄 **License**
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is open source and available under the [MIT License](LICENSE).
 
-## 🙏 Acknowledgments
+## 🆘 **Support**
 
-- **OpenAI** for the GPT models and embeddings
-- **LangChain** for the RAG framework
-- **ChromaDB** for vector storage
-- **Streamlit** for the web interface
-
-## 📞 Support
-
-- **Issues**: Create a GitHub issue for bugs or feature requests
-- **Discussions**: Use GitHub Discussions for questions and ideas
-- **Documentation**: Check this README and code comments
+- **Issues**: Create a GitHub issue
+- **Questions**: Check the troubleshooting section
+- **Documentation**: Review API docs at `/docs` endpoint
 
 ---
 
-**Happy RAG-ing! 🎉**
+**Happy Document Q&A! 🎉**
 
-*Built with ❤️ using Python, LangChain, and OpenAI*
+*Built with ❤️ using Next.js, FastAPI, and OpenAI*

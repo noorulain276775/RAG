@@ -1,13 +1,31 @@
+# Core LangChain packages
 langchain>=0.1.0
-langchain-openai>=0.0.5
 langchain-community>=0.0.10
+
+# Free AI Providers
+langchain-ollama>=0.1.0
+langchain-huggingface>=0.1.0
+
+# OpenAI (optional - for paid users)
+langchain-openai>=0.0.5
+
+# Vector Database
 chromadb>=0.4.22
+
+# Free Embeddings
 sentence-transformers>=2.2.2
-openai>=1.12.0
-streamlit>=1.29.0
-python-dotenv>=1.0.0
+
+# Document Processing
 pypdf>=3.17.4
+python-dotenv>=1.0.0
+
+# Utilities
 tiktoken>=0.5.2
-faiss-cpu>=1.7.4
 numpy>=1.24.3
 pandas>=2.0.3
+
+# Web Interface
+streamlit>=1.29.0
+
+# Optional: FAISS for alternative vector storage
+faiss-cpu>=1.7.4

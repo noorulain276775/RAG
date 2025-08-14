@@ -1,130 +1,122 @@
+import chromadb
+from chromadb.config import Settings
+from langchain.vectorstores import Chroma
+from langchain.embeddings import HuggingFaceEmbeddings
 import os
-from typing import List, Optional
-from langchain_community.vectorstores import Chroma
-from langchain_openai import OpenAIEmbeddings
-from langchain.schema import Document
 from config import Config
 
 class VectorStore:
-    """Manages vector storage and retrieval for the RAG system."""
-    
     def __init__(self):
-        self.embeddings = OpenAIEmbeddings(
-            openai_api_key=Config.OPENAI_API_KEY,
-            model="text-embedding-ada-002"
-        )
-        self.vector_store = None
-        self._initialize_vector_store()
-    
-    def _initialize_vector_store(self):
-        """Initialize the vector store with ChromaDB."""
-        try:
-            # Check if vector store already exists
-            if os.path.exists(Config.CHROMA_PERSIST_DIRECTORY):
-                self.vector_store = Chroma(
-                    persist_directory=Config.CHROMA_PERSIST_DIRECTORY,
-                    embedding_function=self.embeddings
-                )
-                print(f"Loaded existing vector store from {Config.CHROMA_PERSIST_DIRECTORY}")
-            else:
-                # Create new vector store
-                self.vector_store = Chroma(
-                    persist_directory=Config.CHROMA_PERSIST_DIRECTORY,
-                    embedding_function=self.embeddings
-                )
-                print(f"Created new vector store at {Config.CHROMA_PERSIST_DIRECTORY}")
-        except Exception as e:
-            print(f"Error initializing vector store: {e}")
-            # Fallback to in-memory store
-            self.vector_store = Chroma(
-                embedding_function=self.embeddings
+        """Initialize the vector store with free embeddings."""
+        self.config = Config()
+        self.persist_directory = self.config.CHROMA_PERSIST_DIRECTORY
+        
+        # Use free sentence-transformers embeddings
+        embedding_config = self.config.get_embedding_config()
+        
+        if embedding_config["provider"] == "sentence-transformers":
+            print(f"🔍 Using free embeddings: {embedding_config['model']}")
+            self.embeddings = HuggingFaceEmbeddings(
+                model_name=embedding_config["model"],
+                model_kwargs={'device': 'cpu'},  # Use CPU for compatibility
+                encode_kwargs={'normalize_embeddings': True}
             )
-            print("Using in-memory vector store as fallback")
+        else:
+            # Fallback to OpenAI if configured
+            try:
+                from langchain_openai import OpenAIEmbeddings
+                self.embeddings = OpenAIEmbeddings(
+                    openai_api_key=self.config.OPENAI_API_KEY,
+                    model="text-embedding-ada-002"
+                )
+                print("🔍 Using OpenAI embeddings")
+            except ImportError:
+                print("❌ OpenAI embeddings not available, falling back to sentence-transformers")
+                self.embeddings = HuggingFaceEmbeddings(
+                    model_name="all-MiniLM-L6-v2",
+                    model_kwargs={'device': 'cpu'},
+                    encode_kwargs={'normalize_embeddings': True}
+                )
+        
+        # Initialize ChromaDB
+        try:
+            self.db = Chroma(
+                persist_directory=self.persist_directory,
+                embedding_function=self.embeddings,
+                collection_name="rag_documents"
+            )
+            print(f"✅ Vector store initialized at: {self.persist_directory}")
+        except Exception as e:
+            print(f"❌ Failed to initialize vector store: {e}")
+            raise
     
-    def add_documents(self, documents: List[Document]) -> bool:
+    def add_documents(self, documents):
         """Add documents to the vector store."""
         try:
             if not documents:
-                print("No documents to add")
                 return False
             
-            # Add documents to vector store
-            self.vector_store.add_documents(documents)
+            # Add documents to ChromaDB
+            self.db.add_documents(documents)
+            self.db.persist()
             
-            # Persist the changes
-            self.vector_store.persist()
-            
-            print(f"Successfully added {len(documents)} documents to vector store")
+            print(f"✅ Added {len(documents)} documents to vector store")
             return True
             
         except Exception as e:
-            print(f"Error adding documents to vector store: {e}")
+            print(f"❌ Failed to add documents: {e}")
             return False
     
-    def similarity_search(self, query: str, k: int = None) -> List[Document]:
-        """Perform similarity search for a query."""
+    def similarity_search(self, query, k=None):
+        """Perform similarity search."""
         try:
             if k is None:
-                k = Config.TOP_K_RESULTS
+                k = self.config.TOP_K_RESULTS
             
-            results = self.vector_store.similarity_search(query, k=k)
+            results = self.db.similarity_search(query, k=k)
+            print(f"🔍 Found {len(results)} relevant documents for query: '{query[:50]}...'")
             return results
             
         except Exception as e:
-            print(f"Error performing similarity search: {e}")
+            print(f"❌ Search failed: {e}")
             return []
     
-    def similarity_search_with_score(self, query: str, k: int = None) -> List[tuple]:
-        """Perform similarity search with scores."""
+    def get_collection_stats(self):
+        """Get statistics about the collection."""
         try:
-            if k is None:
-                k = Config.TOP_K_RESULTS
-            
-            results = self.vector_store.similarity_search_with_score(query, k=k)
-            return results
-            
-        except Exception as e:
-            print(f"Error performing similarity search with score: {e}")
-            return []
-    
-    def get_collection_stats(self) -> dict:
-        """Get statistics about the vector store collection."""
-        try:
-            collection = self.vector_store._collection
+            # Get basic stats
+            collection = self.db._collection
             count = collection.count()
             
-            stats = {
+            return {
                 "total_documents": count,
-                "persist_directory": Config.CHROMA_PERSIST_DIRECTORY,
-                "embedding_model": "text-embedding-ada-002"
+                "embedding_model": self.embeddings.model_name if hasattr(self.embeddings, 'model_name') else "unknown",
+                "persist_directory": self.persist_directory,
+                "status": "active"
             }
             
-            return stats
-            
         except Exception as e:
-            print(f"Error getting collection stats: {e}")
-            return {"error": str(e)}
+            print(f"❌ Failed to get collection stats: {e}")
+            return {
+                "total_documents": 0,
+                "embedding_model": "unknown",
+                "persist_directory": self.persist_directory,
+                "status": "error"
+            }
     
-    def clear_collection(self) -> bool:
-        """Clear all documents from the vector store."""
+    def clear_collection(self):
+        """Clear all documents from the collection."""
         try:
-            self.vector_store._collection.delete(where={})
-            self.vector_store.persist()
-            print("Vector store collection cleared")
+            # Delete the collection directory
+            import shutil
+            if os.path.exists(self.persist_directory):
+                shutil.rmtree(self.persist_directory)
+                print("🗑️ Cleared vector store collection")
+            
+            # Reinitialize
+            self.__init__()
             return True
             
         except Exception as e:
-            print(f"Error clearing collection: {e}")
-            return False
-    
-    def delete_documents(self, ids: List[str]) -> bool:
-        """Delete specific documents by their IDs."""
-        try:
-            self.vector_store._collection.delete(ids=ids)
-            self.vector_store.persist()
-            print(f"Deleted {len(ids)} documents from vector store")
-            return True
-            
-        except Exception as e:
-            print(f"Error deleting documents: {e}")
+            print(f"❌ Failed to clear collection: {e}")
             return False

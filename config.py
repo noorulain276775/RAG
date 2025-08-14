@@ -12,7 +12,7 @@ class Config:
     
     # Ollama Configuration (FREE - runs locally)
     OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-    OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama2")  # llama2, mistral, codellama, etc.
+    OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "phi3:mini")  # phi3:mini, llama2, mistral, codellama, etc.
     
     # Hugging Face Configuration (FREE tier)
     HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY", "your_hf_token_here")

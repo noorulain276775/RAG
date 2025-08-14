@@ -53,33 +53,62 @@ export default function ChatInterface() {
     setIsLoading(true)
 
     try {
-      // Simulate API call to RAG system
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Call the actual RAG system API with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minutes timeout
       
-      // Mock response - in real app, this would come from your RAG system
-      const mockResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        type: 'assistant',
-        content: `I understand you're asking about "${inputValue}". Based on the documents you've uploaded, I can provide you with a comprehensive answer. The RAG system works by:\n\n1. **Retrieving** relevant document chunks\n2. **Analyzing** the context\n3. **Generating** accurate responses\n\nTo get real answers, make sure you have documents uploaded. Your system is using Ollama (free local AI) - no API keys required!`,
-        timestamp: new Date(),
-        sources: [
-          {
-            title: 'RAG System Overview',
-            content: 'Retrieval-Augmented Generation combines document retrieval with AI generation...',
-            score: 0.95
-          }
-        ]
-      }
+      try {
+        const response = await fetch('http://localhost:8000/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            question: inputValue,
+            k: 3
+          }),
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+      
+        if (!response.ok) {
+          throw new Error(`Chat failed: ${response.statusText}`)
+        }
+        
+        const ragResponse = await response.json()
+        
+        // Create response message from actual RAG system
+        const assistantResponse: Message = {
+          id: (Date.now() + 1).toString(),
+          type: 'assistant',
+          content: ragResponse.answer,
+          timestamp: new Date(),
+          sources: ragResponse.sources.map((source: any) => ({
+            title: source.metadata?.source || 'Document',
+            content: source.page_content || source.content || '',
+            score: source.score || 0.95
+          }))
+        }
 
-      setMessages(prev => [...prev, mockResponse])
-    } catch (error) {
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        type: 'assistant',
-        content: 'Sorry, I encountered an error while processing your question. Please try again or check your configuration.',
-        timestamp: new Date()
+        setMessages(prev => [...prev, assistantResponse])
+      } catch (error: any) {
+        let errorContent = 'Sorry, I encountered an error while processing your question. Please try again or check your configuration.';
+        
+        if (error.name === 'AbortError') {
+          errorContent = 'The request timed out. This might be because Ollama is taking too long to respond. Please try asking a simpler question or check if Ollama is running properly.';
+        } else if (error.message) {
+          errorContent = `Error: ${error.message}`;
+        }
+        
+        const errorMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: 'assistant',
+          content: errorContent,
+          timestamp: new Date()
+        }
+        setMessages(prev => [...prev, errorMessage])
       }
-      setMessages(prev => [...prev, errorMessage])
     } finally {
       setIsLoading(false)
     }

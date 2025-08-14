@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Upload, Send, FileText, Brain, MessageCircle, Settings } from 'lucide-react'
 import DocumentUpload from '@/components/DocumentUpload'
 import ChatInterface from '@/components/ChatInterface'
@@ -10,25 +10,72 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'chat' | 'documents' | 'settings'>('chat')
   const [documents, setDocuments] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  
+  // Load documents from backend on component mount
+  const loadDocuments = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/documents')
+      if (response.ok) {
+        const docStats = await response.json()
+        console.log(`Total documents in system: ${docStats.total_documents}`)
+        
+        // If you want to show actual document details, you might need to add an endpoint
+        // that returns document metadata, or keep the current approach
+      }
+    } catch (error) {
+      console.error('Failed to load documents:', error)
+    }
+  }
+  
+  // Load documents when component mounts
+  useEffect(() => {
+    loadDocuments()
+  }, [])
 
   const handleDocumentUpload = async (files: File[]) => {
     setIsLoading(true)
     try {
-      // Simulate API call for document upload
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Create FormData for file upload
+      const formData = new FormData()
+      files.forEach(file => {
+        formData.append('files', file)
+      })
       
-      const newDocs = files.map((file, index) => ({
-        id: Date.now() + index,
-        name: file.name,
-        size: file.size,
-        type: file.type,
+      // Call the actual backend API
+      const response = await fetch('http://localhost:8000/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`)
+      }
+      
+      const uploadedDocs = await response.json()
+      
+      // Update documents state with real API response
+      const newDocs = uploadedDocs.map((doc: any) => ({
+        id: doc.id,
+        name: doc.name,
+        size: doc.size,
+        type: doc.type,
         uploadedAt: new Date().toISOString(),
-        status: 'processed'
+        status: doc.status
       }))
       
       setDocuments(prev => [...prev, ...newDocs])
+      
+      // Refresh document count from backend
+      const docResponse = await fetch('http://localhost:8000/api/documents')
+      if (docResponse.ok) {
+        const docStats = await docResponse.json()
+        console.log(`Total documents in system: ${docStats.total_documents}`)
+      }
+      
     } catch (error) {
       console.error('Upload failed:', error)
+      // Show error to user
+      alert(`Upload failed: ${error}`)
     } finally {
       setIsLoading(false)
     }
@@ -87,9 +134,9 @@ export default function Home() {
         {/* Tab Content */}
         <div className="animate-fade-in">
           {activeTab === 'chat' && (
-            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
               {/* Document Upload Sidebar */}
-              <div className="xl:col-span-1 space-y-6">
+              <div className="lg:col-span-2 space-y-6">
                 <DocumentUpload 
                   onUpload={handleDocumentUpload}
                   isLoading={isLoading}
@@ -98,7 +145,7 @@ export default function Home() {
               </div>
               
               {/* Chat Interface */}
-              <div className="xl:col-span-3">
+              <div className="lg:col-span-3">
                 <ChatInterface />
               </div>
             </div>

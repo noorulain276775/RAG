@@ -92,11 +92,11 @@ export default function DocumentList({ documents }: DocumentListProps) {
             className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors cursor-pointer w-full"
             onClick={() => setSelectedDocument(doc)}
           >
-            <div className="flex items-start justify-between">
-              <div className="flex items-start space-x-3 flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start space-x-3 flex-1 min-w-0 overflow-hidden">
                 <span className="text-lg flex-shrink-0">{getFileIcon(doc.type)}</span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 break-words leading-tight">
+                <div className="flex-1 min-w-0 overflow-hidden">
+                  <p className="document-name" title={doc.name}>
                     {doc.name}
                   </p>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-xs text-gray-500 mt-1 space-y-1 sm:space-y-0">

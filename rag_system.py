@@ -1,6 +1,6 @@
-from langchain.chains import LLMChain
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema import Document
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.documents import Document
+from langchain_core.output_parsers import StrOutputParser
 from typing import List, Dict, Any
 import json
 from config import Config
@@ -14,9 +14,9 @@ class RAGSystem:
         self.vector_store = None
         self.document_loader = None
         
-        print(f"🤖 RAG System initialized with {self.ai_config['provider']} provider")
+        print(f"RAG System initialized with {self.ai_config['provider']} provider")
         if self.ai_config['is_free']:
-            print("💰 Using FREE AI provider!")
+            print("Using FREE AI provider!")
     
     def _initialize_llm(self):
         """Initialize the language model based on configuration."""
@@ -30,7 +30,7 @@ class RAGSystem:
                     model=self.ai_config['model'],
                     temperature=self.config.TEMPERATURE
                 )
-                print(f"✅ Ollama LLM initialized with model: {self.ai_config['model']}")
+                print(f"Ollama LLM initialized with model: {self.ai_config['model']}")
                 
             elif self.ai_config['provider'] == 'huggingface':
                 # Use Hugging Face (FREE tier)
@@ -41,7 +41,7 @@ class RAGSystem:
                     huggingfacehub_api_token=self.ai_config['api_key'],
                     model_kwargs={'temperature': self.config.TEMPERATURE}
                 )
-                print(f"✅ Hugging Face LLM initialized with model: {self.ai_config['model']}")
+                print(f"Hugging Face LLM initialized with model: {self.ai_config['model']}")
                 
             else:
                 # Use OpenAI (paid)
@@ -52,7 +52,7 @@ class RAGSystem:
                     model_name=self.ai_config['model'],
                     temperature=self.config.TEMPERATURE
                 )
-                print(f"✅ OpenAI LLM initialized with model: {self.ai_config['model']}")
+                print(f"OpenAI LLM initialized with model: {self.ai_config['model']}")
             
             return self.llm
             
@@ -68,17 +68,17 @@ class RAGSystem:
                     model="llama2",
                     temperature=self.config.TEMPERATURE
                 )
-                print("✅ Fallback to Ollama successful")
+                print("Fallback to Ollama successful")
                 return self.llm
             except Exception as fallback_error:
-                print(f"❌ Fallback to Ollama also failed: {fallback_error}")
+                print(f"Fallback to Ollama also failed: {fallback_error}")
                 raise
     
     def set_components(self, vector_store, document_loader):
         """Set the vector store and document loader components."""
         self.vector_store = vector_store
         self.document_loader = document_loader
-        print("🔗 RAG components connected")
+        print("RAG components connected")
     
     def query(self, question: str, k: int = None) -> Dict[str, Any]:
         """Query the RAG system with a question."""
@@ -88,6 +88,8 @@ class RAGSystem:
             
             # Retrieve relevant documents
             relevant_docs = self.vector_store.similarity_search(question, k=k)
+            
+            print(f"🔍 Found {len(relevant_docs)} relevant documents for query: '{question[:50]}{'...' if len(question) > 50 else ''}'")
             
             if not relevant_docs:
                 return {
@@ -99,8 +101,19 @@ class RAGSystem:
             # Create context from retrieved documents
             context = self._create_context(relevant_docs)
             
-            # Generate answer using the LLM
-            answer = self._generate_answer(question, context)
+            # Generate answer using the LLM with timeout protection
+            try:
+                answer = self._generate_answer(question, context)
+            except Exception as e:
+                if "timeout" in str(e).lower() or "timed out" in str(e).lower():
+                    return {
+                        "answer": "I'm sorry, but the response is taking too long. Please try asking a simpler question or check if Ollama is running properly.",
+                        "sources": [],
+                        "num_sources": 0,
+                        "error": "timeout"
+                    }
+                else:
+                    raise e
             
             # Extract source information
             sources = self._extract_sources(relevant_docs)
@@ -144,11 +157,18 @@ class RAGSystem:
                 Answer:"""
             )
             
-            # Create LLM chain
-            chain = LLMChain(llm=self.llm, prompt=prompt_template)
+            # Create modern LangChain chain
+            chain = prompt_template | self.llm | StrOutputParser()
             
-            # Generate response
-            response = chain.run(context=context, question=question)
+            # Generate response with timeout handling
+            try:
+                response = chain.invoke({"context": context, "question": question})
+            except Exception as e:
+                print(f"❌ LLM generation error: {e}")
+                if "timeout" in str(e).lower() or "timed out" in str(e).lower():
+                    return "I'm sorry, but the response is taking too long. Please try asking a simpler question or check if Ollama is running properly."
+                else:
+                    raise e
             
             return response.strip()
             
@@ -177,8 +197,8 @@ class RAGSystem:
                 "Please provide a concise summary of the following text in {max_length} words or less:\n\n{text}\n\nSummary:"
             )
             
-            chain = LLMChain(llm=self.llm, prompt=prompt_template)
-            summary = chain.run(text=text, max_length=max_length)
+            chain = prompt_template | self.llm | StrOutputParser()
+            summary = chain.invoke({"text": text, "max_length": max_length})
             
             return summary.strip()
             
@@ -193,8 +213,8 @@ class RAGSystem:
                 "Based on the following text, generate {num_questions} interesting questions that someone might ask:\n\n{text}\n\nQuestions:\n1."
             )
             
-            chain = LLMChain(llm=self.llm, prompt=prompt_template)
-            response = chain.run(text=text, num_questions=num_questions)
+            chain = prompt_template | self.llm | StrOutputParser()
+            response = chain.invoke({"text": text, "num_questions": num_questions})
             
             # Parse questions from response
             questions = []

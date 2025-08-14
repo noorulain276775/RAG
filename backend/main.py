@@ -11,7 +11,8 @@ from pathlib import Path
 
 # Import RAG system components
 import sys
-sys.path.append('..')
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from document_loader import DocumentLoader
 from vector_store import VectorStore
 from rag_system import RAGSystem

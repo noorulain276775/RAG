@@ -1,18 +1,18 @@
-# 🤖 RAG System - AI-Powered Document Q&A
+#  RAG System - AI-Powered Document Q&A
 
 A comprehensive **Retrieval-Augmented Generation (RAG)** system with a modern Next.js frontend and Python backend. Upload documents and ask questions with AI-powered context awareness.
 
-## 🚀 **Features**
+##  **Features**
 
-- **📄 Document Upload**: Support for PDF, TXT, DOC, Markdown, and code files
-- **🧠 AI-Powered Q&A**: Ask questions about your documents with full context
-- **🔍 Smart Retrieval**: Vector-based similarity search for relevant content
-- **💬 Interactive Chat**: Modern chat interface with source citations
-- **📱 Responsive Design**: Beautiful Next.js frontend with Tailwind CSS
-- **⚡ Fast API**: FastAPI backend with real-time document processing
-- **🔐 Secure**: OpenAI API integration with environment-based configuration
+- ** Document Upload**: Support for PDF, TXT, DOC, Markdown, and code files
+- ** AI-Powered Q&A**: Ask questions about your documents with full context
+- ** Smart Retrieval**: Vector-based similarity search for relevant content
+- ** Interactive Chat**: Modern chat interface with source citations
+- ** Responsive Design**: Beautiful Next.js frontend with Tailwind CSS
+- ** Fast API**: FastAPI backend with real-time document processing
+- ** Secure**: OpenAI API integration with environment-based configuration
 
-## 🏗️ **Architecture**
+## **Architecture**
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -22,7 +22,7 @@ A comprehensive **Retrieval-Augmented Generation (RAG)** system with a modern Ne
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-## 📁 **Project Structure**
+## **Project Structure**
 
 ```
 RAG/
@@ -43,7 +43,7 @@ RAG/
 └── README.md                # This File
 ```
 
-## 🛠️ **Quick Start**
+## **Quick Start**
 
 ### **1. Setup Environment**
 
@@ -89,23 +89,23 @@ npm run dev
 
 **Frontend will be available at:** http://localhost:3000
 
-## 🎯 **How It Works**
+## **How It Works**
 
 ### **Document Processing Pipeline:**
 
-1. **📤 Upload**: Drag & drop or select files through the web interface
-2. **✂️ Chunking**: Documents are split into smaller, manageable pieces
-3. **🔢 Embedding**: Text chunks are converted to numerical vectors using OpenAI
-4. **💾 Storage**: Vectors are stored in ChromaDB for fast retrieval
-5. **🔍 Retrieval**: When you ask a question, relevant chunks are found
-6. **🤖 Generation**: AI generates answers using retrieved context
+1. **Upload**: Drag & drop or select files through the web interface
+2. **Chunking**: Documents are split into smaller, manageable pieces
+3. **Embedding**: Text chunks are converted to numerical vectors using OpenAI
+4. **Storage**: Vectors are stored in ChromaDB for fast retrieval
+5. **Retrieval**: When you ask a question, relevant chunks are found
+6. **Generation**: AI generates answers using retrieved context
 
 ### **Context Awareness:**
 
 - **Before**: AI gives generic answers
 - **After**: AI provides specific, document-based responses with sources
 
-## 📱 **Frontend Features**
+## **Frontend Features**
 
 ### **Main Interface:**
 - **Chat Tab**: Interactive Q&A with your documents
@@ -124,7 +124,7 @@ npm run dev
 - Copy responses
 - Loading states
 
-## 🔌 **API Endpoints**
+## **API Endpoints**
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -135,7 +135,7 @@ npm run dev
 | `/api/sample-documents` | POST | Load sample data |
 | `/api/system-info` | GET | System configuration |
 
-## 🧪 **Testing the System**
+## **Testing the System**
 
 ### **1. Load Sample Documents**
 ```bash
@@ -157,7 +157,7 @@ curl -X POST http://localhost:8000/api/chat \
 # Go to Chat tab → Type your question
 ```
 
-## ⚙️ **Configuration**
+## **Configuration**
 
 ### **Environment Variables (.env):**
 ```env
@@ -175,7 +175,7 @@ TEMPERATURE=0.7
 - CORS enabled for development
 - Responsive design with Tailwind CSS
 
-## 🚨 **Troubleshooting**
+## **Troubleshooting**
 
 ### **Common Issues:**
 
@@ -208,7 +208,7 @@ cd frontend
 npm run dev
 ```
 
-## 🔮 **Future Enhancements**
+## **Future Enhancements**
 
 - [ ] **User Authentication**: Secure document access
 - [ ] **Document Versioning**: Track document changes
@@ -217,14 +217,14 @@ npm run dev
 - [ ] **Real-time Updates**: WebSocket notifications
 - [ ] **Mobile App**: React Native version
 
-## 📚 **Learning Resources**
+## **Learning Resources**
 
 - **RAG Concepts**: [LangChain RAG Guide](https://python.langchain.com/docs/use_cases/question_answering/)
 - **Next.js**: [Official Documentation](https://nextjs.org/docs)
 - **FastAPI**: [User Guide](https://fastapi.tiangolo.com/)
 - **Vector Databases**: [ChromaDB Docs](https://docs.trychroma.com/)
 
-## 🤝 **Contributing**
+## **Contributing**
 
 1. Fork the repository
 2. Create a feature branch
@@ -232,18 +232,7 @@ npm run dev
 4. Add tests if applicable
 5. Submit a pull request
 
-## 📄 **License**
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## 🆘 **Support**
-
-- **Issues**: Create a GitHub issue
-- **Questions**: Check the troubleshooting section
-- **Documentation**: Review API docs at `/docs` endpoint
-
 ---
 
-**Happy Document Q&A! 🎉**
 
-*Built with ❤️ using Next.js, FastAPI, and OpenAI*
+*Built using Next.js, Python (FastAPI), and OpenAI*

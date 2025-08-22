@@ -7,10 +7,9 @@ import uvicorn
 from main import app
 
 if __name__ == "__main__":
-    print("🚀 Starting RAG System Backend...")
-    print("📍 API will be available at: http://localhost:8000")
-    print("📖 API Documentation at: http://localhost:8000/docs")
-    print("🔧 Health Check at: http://localhost:8000/api/health")
+    print("Starting RAG System Backend...")
+    print("API will be available at: http://localhost:8000")
+    print("Health Check at: http://localhost:8000/api/health")
     print()
     
     uvicorn.run(

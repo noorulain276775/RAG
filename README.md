@@ -36,13 +36,10 @@ RAG/
 │   ├── main.py              # FastAPI Application
 │   ├── run.py               # Backend Runner
 │   └── requirements.txt     # Backend Dependencies
-├── document_loader.py        # Document Processing
 ├── vector_store.py          # Vector Database
 ├── rag_system.py            # Core RAG Logic
 ├── config.py                # Configuration
 ├── requirements.txt          # Python Dependencies
-├── setup_complete.py        # Complete Setup Script
-├── start_project.bat        # Windows Startup Script
 └── README.md                # This File
 ```
 
@@ -60,19 +57,24 @@ RAG/
 # Clone or navigate to project directory
 cd RAG
 
-# Run the complete setup script
-python setup_complete.py
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Install frontend dependencies
+cd frontend
+npm install
+cd ..
 ```
 
 ### 2. Install Ollama (FREE AI - Recommended)
 
 1. Go to https://ollama.ai/download
-2. Download Windows installer
+2. Download installer for your operating system
 3. Install and restart your computer
 4. Open terminal and run:
    ```bash
    ollama serve
-   ollama pull llama2
+   ollama pull phi3:mini
    ```
 
 ### 3. Start the System
@@ -156,7 +158,7 @@ AI_PROVIDER=ollama
 
 # Ollama Configuration
 OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=llama2
+OLLAMA_MODEL=phi3:mini
 
 # Embedding Configuration (FREE)
 EMBEDDING_PROVIDER=sentence-transformers
@@ -172,11 +174,10 @@ TEMPERATURE=0.7
 
 | Model | Size | Speed | Quality | Best For |
 |-------|------|-------|---------|----------|
+| phi3:mini | 3.8B | Very Fast | Good | Quick responses |
 | llama2 | 7B | Fast | High | General RAG |
 | mistral | 7B | Very Fast | High | Quick responses |
 | codellama | 7B | Fast | Very High | Technical docs |
-| llama2:13b | 13B | Medium | Very High | High quality |
-| llama2:70b | 70B | Slow | Excellent | Best quality |
 
 ## API Endpoints
 
@@ -188,24 +189,13 @@ TEMPERATURE=0.7
 - `POST /api/upload` - Upload documents
 - `GET /api/documents` - List all documents
 - `DELETE /api/documents` - Clear all documents
-- `POST /api/sample-documents` - Load sample documents
 
 ### Chat & Q&A
 - `POST /api/chat` - Ask questions and get AI responses
 
 ## Testing the System
 
-### 1. Load Sample Documents
-
-```bash
-# Via API
-curl -X POST http://localhost:8000/api/sample-documents
-
-# Via Frontend
-# Go to Documents tab → Click "Load Sample Documents"
-```
-
-### 2. Ask Questions
+### 1. Ask Questions
 
 ```bash
 # Via API
@@ -217,7 +207,7 @@ curl -X POST http://localhost:8000/api/chat \
 # Go to Chat tab → Type your question
 ```
 
-### 3. Check System Health
+### 2. Check System Health
 
 ```bash
 # Health check
@@ -262,15 +252,15 @@ Visit http://localhost:8000/docs for:
 # Restart computer after installation
 # Then run:
 ollama serve
-ollama pull llama2
+ollama pull phi3:mini
 ```
 
 ### 2. "Port already in use"
 
 ```bash
 # Check what's using the port
-netstat -ano | findstr :8000
-netstat -ano | findstr :3000
+lsof -i :8000
+lsof -i :3000
 
 # Kill the process or use different ports
 ```
@@ -285,7 +275,7 @@ cd frontend && npm install
 
 ### 4. "Slow responses"
 
-- Use smaller AI models (7B instead of 13B/70B)
+- Use smaller AI models (phi3:mini instead of llama2)
 - Check if GPU acceleration is available
 - Ensure sufficient RAM (8GB+ recommended)
 - Use local embeddings instead of API calls
@@ -368,7 +358,7 @@ cd frontend && npm install
 
 ### Extending the System
 
-- Add new document formats in `document_loader.py`
+- Add new document formats in `backend/document_loader.py`
 - Implement new AI providers in `rag_system.py`
 - Create custom embedding models in `vector_store.py`
 - Add new API endpoints in `backend/main.py`
@@ -457,7 +447,7 @@ cd frontend && npm install
 ollama create mymodel -f Modelfile
 
 # Modelfile example:
-FROM llama2
+FROM phi3:mini
 PARAMETER temperature 0.7
 PARAMETER top_p 0.9
 ```

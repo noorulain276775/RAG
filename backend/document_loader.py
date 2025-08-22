@@ -7,7 +7,7 @@ from langchain_community.document_loaders import (
     DirectoryLoader,
     UnstructuredFileLoader
 )
-from langchain.schema import Document
+from langchain_core.documents import Document
 from config import Config
 
 class DocumentLoader:
@@ -101,4 +101,4 @@ class DocumentLoader:
             )
             documents.append(doc)
         
-        return self.text_splitter.split_documents(documents)
+        return documents

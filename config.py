@@ -4,18 +4,18 @@ load_dotenv()
 
 class Config:
     # AI Provider Selection
-    AI_PROVIDER = os.getenv("AI_PROVIDER", "ollama")  # ollama, openai, huggingface
+    AI_PROVIDER = os.getenv("AI_PROVIDER", "huggingface")  # ollama, openai, huggingface
     
     # OpenAI Configuration (if using OpenAI)
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "your_openai_api_key_here")
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
     OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
     
     # Ollama Configuration (FREE - runs locally)
     OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
     OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "phi3:mini")  # phi3:mini, llama2, mistral, codellama, etc.
     
-    # Hugging Face Configuration (FREE tier)
-    HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY", "your_hf_token_here")
+    # Hugging Face Configuration (FREE tier - FASTEST)
+    HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY", "")
     HUGGINGFACE_MODEL = os.getenv("HUGGINGFACE_MODEL", "microsoft/DialoGPT-medium")
     
     # Vector Database Configuration
@@ -41,6 +41,8 @@ class Config:
                 "is_free": True
             }
         elif cls.AI_PROVIDER == "huggingface":
+            if not cls.HUGGINGFACE_API_KEY:
+                raise ValueError("HUGGINGFACE_API_KEY is required when using Hugging Face provider")
             return {
                 "provider": "huggingface",
                 "api_key": cls.HUGGINGFACE_API_KEY,
@@ -48,6 +50,8 @@ class Config:
                 "is_free": True
             }
         else:  # openai
+            if not cls.OPENAI_API_KEY:
+                raise ValueError("OPENAI_API_KEY is required when using OpenAI provider")
             return {
                 "provider": "openai",
                 "api_key": cls.OPENAI_API_KEY,

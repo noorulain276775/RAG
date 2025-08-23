@@ -157,3 +157,5 @@ torch_cache/
 # Local configuration
 config.local.py
 settings.local.py
+.env
+.env/

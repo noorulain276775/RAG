@@ -43,39 +43,30 @@ RAG/
 └── README.md                # This File
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
-### Prerequisites
+### 1. Get Your FREE Hugging Face API Token (FASTEST Option)
+1. Go to [Hugging Face](https://huggingface.co/)
+2. Sign up for a free account
+3. Go to [Settings → Access Tokens](https://huggingface.co/settings/tokens)
+4. Create a new token with "Read" permissions
+5. Copy the token
 
-- Python 3.8+ installed
-- Node.js 18+ installed
-- Git (optional)
-
-### 1. Initial Setup
-
+### 2. Set Up Environment Variables
+Create a `.env` file in the root directory (copy from `.env.example`):
 ```bash
-# Clone or navigate to project directory
-cd RAG
+# Copy the example file
+cp .env.example .env
 
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Install frontend dependencies
-cd frontend
-npm install
-cd ..
+# Edit .env and add your actual API key
+AI_PROVIDER=huggingface
+HUGGINGFACE_API_KEY=hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EMBEDDING_PROVIDER=sentence-transformers
 ```
 
-### 2. Install Ollama (FREE AI - Recommended)
+**⚠️ Security Note**: Never commit your `.env` file to Git! It's already in `.gitignore`.
 
-1. Go to https://ollama.ai/download
-2. Download installer for your operating system
-3. Install and restart your computer
-4. Open terminal and run:
-   ```bash
-   ollama serve
-   ollama pull phi3:mini
-   ```
+**Note**: Hugging Face is 10-50x faster than Ollama and completely free!
 
 ### 3. Start the System
 
@@ -154,7 +145,8 @@ npm run dev
 
 ```env
 # AI Provider Selection
-AI_PROVIDER=ollama
+AI_PROVIDER=huggingface
+HUGGINGFACE_API_KEY=your_hf_token_here
 
 # Ollama Configuration
 OLLAMA_BASE_URL=http://localhost:11434
@@ -172,12 +164,12 @@ TEMPERATURE=0.7
 
 ### Available AI Models
 
-| Model | Size | Speed | Quality | Best For |
-|-------|------|-------|---------|----------|
-| phi3:mini | 3.8B | Very Fast | Good | Quick responses |
-| llama2 | 7B | Fast | High | General RAG |
-| mistral | 7B | Very Fast | High | Quick responses |
-| codellama | 7B | Fast | Very High | Technical docs |
+| Provider | Model | Cost | Speed | Best For |
+|----------|-------|------|-------|----------|
+| **Hugging Face** | DialoGPT-medium | FREE | **Very Fast** | Quick responses |
+| **Hugging Face** | T5-base | FREE | **Fast** | General RAG |
+| **Ollama** | phi3:mini | FREE | Slow | Local use only |
+| **Ollama** | llama2 | FREE | Very Slow | High quality (local) |
 
 ## API Endpoints
 

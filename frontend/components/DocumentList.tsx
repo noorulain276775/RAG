@@ -37,12 +37,12 @@ export default function DocumentList({ documents }: DocumentListProps) {
   }
 
   const getFileIcon = (type: string) => {
-    if (type.includes('pdf')) return '📄'
-    if (type.includes('text') || type.includes('markdown')) return '📝'
-    if (type.includes('word') || type.includes('document')) return '📄'
-    if (type.includes('image')) return '🖼️'
-    if (type.includes('code')) return '💻'
-    return '📁'
+    if (type.includes('pdf')) return 'PDF'
+    if (type.includes('text') || type.includes('markdown')) return 'TXT'
+    if (type.includes('word') || type.includes('document')) return 'DOC'
+    if (type.includes('image')) return 'IMG'
+    if (type.includes('code')) return 'CODE'
+    return 'FILE'
   }
 
   const getStatusColor = (status: string) => {

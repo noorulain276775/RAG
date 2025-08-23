@@ -61,11 +61,11 @@ export default function DocumentUpload({ onUpload, isLoading }: DocumentUploadPr
   }
 
   const getFileIcon = (type: string) => {
-    if (type.includes('pdf')) return '📄'
-    if (type.includes('text') || type.includes('markdown')) return '📝'
-    if (type.includes('word') || type.includes('document')) return '📄'
-    if (type.includes('image')) return '🖼️'
-    return '📁'
+    if (type.includes('pdf')) return 'PDF'
+    if (type.includes('text') || type.includes('markdown')) return 'TXT'
+    if (type.includes('word') || type.includes('document')) return 'DOC'
+    if (type.includes('image')) return 'IMG'
+    return 'FILE'
   }
 
   return (
@@ -162,7 +162,7 @@ export default function DocumentUpload({ onUpload, isLoading }: DocumentUploadPr
 
       {/* Upload Tips */}
       <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-        <h4 className="text-sm font-medium text-blue-800 mb-2">💡 Upload Tips</h4>
+        <h4 className="text-sm font-medium text-blue-800 mb-2">Upload Tips</h4>
         <ul className="text-xs text-blue-700 space-y-1">
           <li>• PDF files work best for long documents</li>
           <li>• Text files are processed faster</li>

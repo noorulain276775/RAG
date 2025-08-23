@@ -64,8 +64,8 @@ export default function ChatInterface() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            question: inputValue,
-            k: 3
+            question: inputValue
+            // k is not specified, so it will use the backend default (1)
           }),
           signal: controller.signal
         });
@@ -85,8 +85,8 @@ export default function ChatInterface() {
           content: ragResponse.answer,
           timestamp: new Date(),
           sources: ragResponse.sources.map((source: any) => ({
-            title: source.metadata?.source || 'Document',
-            content: source.page_content || source.content || '',
+            title: source.title || 'Document',
+            content: source.content || '',
             score: source.score || 0.95
           }))
         }
@@ -253,7 +253,7 @@ export default function ChatInterface() {
       {/* Chat Tips */}
       <div className="mt-4 p-3 bg-blue-50 rounded-lg">
         <p className="text-xs text-blue-700">
-          💡 <strong>Tip:</strong> Ask specific questions about your uploaded documents. 
+          <strong>Tip:</strong> Ask specific questions about your uploaded documents. 
           The AI will search through your content and provide contextual answers.
         </p>
       </div>

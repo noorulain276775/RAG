@@ -54,7 +54,7 @@ class DocumentLoader:
             print(f"Error loading directory {directory_path}: {e}")
             return []
     
-    def load_file(self, file_path: str) -> List[Document]:
+    def load_file(self, file_path: str, original_filename: str = None) -> List[Document]:
         """Automatically detect file type and load accordingly."""
         if not os.path.exists(file_path):
             print(f"File not found: {file_path}")
@@ -63,18 +63,32 @@ class DocumentLoader:
         file_extension = file_path.lower().split('.')[-1]
         
         if file_extension == 'pdf':
-            return self.load_pdf(file_path)
+            documents = self.load_pdf(file_path)
         elif file_extension in ['txt', 'md', 'py', 'js', 'html', 'css']:
-            return self.load_text(file_path)
+            documents = self.load_text(file_path)
         else:
             try:
                 # Try using unstructured loader for other file types
                 loader = UnstructuredFileLoader(file_path)
                 documents = loader.load()
-                return self.text_splitter.split_documents(documents)
+                documents = self.text_splitter.split_documents(documents)
             except Exception as e:
                 print(f"Unsupported file type or error loading {file_path}: {e}")
                 return []
+        
+        # Add original filename to metadata if provided
+        if original_filename and documents:
+            for doc in documents:
+                if hasattr(doc, 'metadata'):
+                    doc.metadata['source'] = original_filename
+                    doc.metadata['title'] = original_filename.rsplit('.', 1)[0] if '.' in original_filename else original_filename
+                else:
+                    doc.metadata = {
+                        'source': original_filename,
+                        'title': original_filename.rsplit('.', 1)[0] if '.' in original_filename else original_filename
+                    }
+        
+        return documents
     
     def create_sample_documents(self) -> List[Document]:
         """Create sample documents for testing the RAG system."""

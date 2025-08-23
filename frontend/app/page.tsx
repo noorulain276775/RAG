@@ -202,10 +202,10 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="text-sm text-gray-600">
-                  <p>✅ No API keys required</p>
-                  <p>✅ Completely free to use</p>
-                  <p>✅ Runs locally on your machine</p>
-                  <p>✅ No internet dependency after setup</p>
+                  <p>• No API keys required</p>
+                  <p>• Completely free to use</p>
+                  <p>• Runs locally on your machine</p>
+                  <p>• No internet dependency after setup</p>
                 </div>
               </div>
             </div>

@@ -23,28 +23,39 @@ class RAGSystem:
         try:
             if self.ai_config['provider'] == 'ollama':
                 # Use Ollama (FREE - runs locally)
-                from langchain_community.llms import Ollama
+                from langchain_ollama import OllamaLLM
                 
-                self.llm = Ollama(
+                # Use a small model that won't cause memory issues
+                model_name = "phi3:mini"  # Much smaller than llama2
+                if self.ai_config['model'] != model_name:
+                    print(f"WARNING: Switching to memory-efficient model: {model_name}")
+                
+                self.llm = OllamaLLM(
                     base_url=self.ai_config['base_url'],
-                    model=self.ai_config['model'],
+                    model=model_name,
                     temperature=self.config.TEMPERATURE
                 )
-                print(f"Ollama LLM initialized with model: {self.ai_config['model']}")
+                print(f"SUCCESS: Ollama LLM initialized with model: {model_name}")
                 
             elif self.ai_config['provider'] == 'huggingface':
-                # Use Hugging Face (FREE tier)
-                from langchain_community.llms import HuggingFaceHub
+                # Hugging Face has compatibility issues - use Ollama instead
+                print("WARNING: Hugging Face has compatibility issues, switching to Ollama for reliability...")
+                from langchain_ollama import OllamaLLM
                 
-                self.llm = HuggingFaceHub(
-                    repo_id=self.ai_config['model'],
-                    huggingfacehub_api_token=self.ai_config['api_key'],
-                    model_kwargs={'temperature': self.config.TEMPERATURE}
+                # Use a small model that won't cause memory issues
+                model_name = "phi3:mini"  # Much smaller than llama2
+                if self.ai_config['model'] != model_name:
+                    print(f"WARNING: Switching to memory-efficient model: {model_name}")
+                
+                self.llm = OllamaLLM(
+                    base_url="http://localhost:11434",
+                    model=model_name,
+                    temperature=self.config.TEMPERATURE
                 )
-                print(f"Hugging Face LLM initialized with model: {self.ai_config['model']}")
-                
+                print(f"SUCCESS: Ollama LLM initialized with model: {model_name}")
+                print("SUCCESS: Using Ollama for maximum reliability and speed!")
+            
             else:
-                # Use OpenAI (paid)
                 from langchain_openai import ChatOpenAI
                 
                 self.llm = ChatOpenAI(
@@ -57,22 +68,9 @@ class RAGSystem:
             return self.llm
             
         except Exception as e:
-            print(f"❌ Failed to initialize LLM: {e}")
-            print("🔄 Falling back to Ollama...")
-            
-            # Fallback to Ollama
-            try:
-                from langchain_community.llms import Ollama
-                self.llm = Ollama(
-                    base_url="http://localhost:11434",
-                    model="llama2",
-                    temperature=self.config.TEMPERATURE
-                )
-                print("Fallback to Ollama successful")
-                return self.llm
-            except Exception as fallback_error:
-                print(f"Fallback to Ollama also failed: {fallback_error}")
-                raise
+            print(f"ERROR: Failed to initialize LLM: {e}")
+            print("INFO: Please check your Hugging Face API key and internet connection")
+            raise Exception(f"Failed to initialize {self.ai_config['provider']} LLM: {e}")
     
     def set_components(self, vector_store, document_loader):
         """Set the vector store and document loader components."""
@@ -89,7 +87,7 @@ class RAGSystem:
             # Retrieve relevant documents
             relevant_docs = self.vector_store.similarity_search(question, k=k)
             
-            print(f"🔍 Found {len(relevant_docs)} relevant documents for query: '{question[:50]}{'...' if len(question) > 50 else ''}'")
+            print(f"INFO: Found {len(relevant_docs)} relevant documents for query: '{question[:50]}{'...' if len(question) > 50 else ''}'")
             
             if not relevant_docs:
                 return {
@@ -107,7 +105,7 @@ class RAGSystem:
             except Exception as e:
                 if "timeout" in str(e).lower() or "timed out" in str(e).lower():
                     return {
-                        "answer": "I'm sorry, but the response is taking too long. Please try asking a simpler question or check if Ollama is running properly.",
+                        "answer": "I'm sorry, but the response is taking too long. Please try asking a simpler question or check your internet connection.",
                         "sources": [],
                         "num_sources": 0,
                         "error": "timeout"
@@ -125,7 +123,7 @@ class RAGSystem:
             }
             
         except Exception as e:
-            print(f"❌ Query failed: {e}")
+            print(f"ERROR: Query failed: {e}")
             return {"error": f"Failed to process query: {str(e)}"}
     
     def _create_context(self, documents: List[Document]) -> str:
@@ -151,8 +149,9 @@ class RAGSystem:
                 Instructions:
                 1. Answer based ONLY on the provided context
                 2. If the context doesn't contain enough information, say so
-                3. Be concise but informative
-                4. Cite which document(s) you used
+                3. Be direct and concise - don't say "According to Document X" or similar phrases
+                4. Provide a natural, conversational answer as if you just know the information
+                5. Keep your response focused and to the point
                 
                 Answer:"""
             )
@@ -164,27 +163,77 @@ class RAGSystem:
             try:
                 response = chain.invoke({"context": context, "question": question})
             except Exception as e:
-                print(f"❌ LLM generation error: {e}")
+                print(f"ERROR: LLM generation error: {e}")
                 if "timeout" in str(e).lower() or "timed out" in str(e).lower():
-                    return "I'm sorry, but the response is taking too long. Please try asking a simpler question or check if Ollama is running properly."
+                    return "I'm sorry, but the response is taking too long. Please try asking a simpler question or check your internet connection."
                 else:
                     raise e
             
             return response.strip()
             
         except Exception as e:
-            print(f"❌ Failed to generate answer: {e}")
+            print(f"ERROR: Failed to generate answer: {e}")
             return f"I encountered an error while generating an answer: {str(e)}"
     
     def _extract_sources(self, documents: List[Document]) -> List[Dict[str, Any]]:
-        """Extract source information from documents."""
+        """Extract source information from documents with deduplication."""
+        # Group documents by source to consolidate multiple chunks
+        source_groups = {}
+        
+        for doc in documents:
+            # Extract clean document name from metadata
+            doc_name = "Unknown Document"
+            if hasattr(doc, 'metadata') and doc.metadata:
+                if 'source' in doc.metadata:
+                    source_path = doc.metadata['source']
+                    # Extract just the filename without path
+                    if '/' in source_path:
+                        doc_name = source_path.split('/')[-1]
+                    elif '\\' in source_path:
+                        doc_name = source_path.split('\\')[-1]
+                    else:
+                        doc_name = source_path
+                    # Remove file extension for cleaner display
+                    if '.' in doc_name:
+                        doc_name = doc_name.rsplit('.', 1)[0]
+                    # Make it more readable
+                    doc_name = doc_name.replace('_', ' ').replace('-', ' ').title()
+                elif 'title' in doc.metadata:
+                    doc_name = doc.metadata['title']
+            
+            # If no good name found, use a generic one
+            if doc_name == "Unknown Document":
+                doc_name = f"Document {len(source_groups) + 1}"
+            
+            # Group by document name and consolidate content
+            if doc_name not in source_groups:
+                source_groups[doc_name] = {
+                    'title': doc_name,
+                    'content': [],
+                    'metadata': doc.metadata if hasattr(doc, 'metadata') else {},
+                    'chunks': 0
+                }
+            
+            # Add content from this chunk
+            source_groups[doc_name]['content'].append(doc.page_content)
+            source_groups[doc_name]['chunks'] += 1
+        
+        # Convert grouped sources to final format
         sources = []
-        for i, doc in enumerate(documents):
+        for i, (doc_name, group) in enumerate(source_groups.items()):
+            # Combine content from all chunks
+            combined_content = " ".join(group['content'])
+            
+            # Truncate if too long
+            if len(combined_content) > 300:
+                combined_content = combined_content[:300] + "..."
+            
             source_info = {
-                "title": f"Document {i+1}",
-                "content": doc.page_content[:200] + "..." if len(doc.page_content) > 200 else doc.page_content,
-                "score": 1.0 - (i * 0.1),  # Simple scoring based on order
-                "metadata": doc.metadata if hasattr(doc, 'metadata') else {}
+                "title": group['title'],
+                "content": combined_content,
+                "score": round(1.0 - (i * 0.1), 2),
+                "metadata": group['metadata'],
+                "chunks_combined": group['chunks']
             }
             sources.append(source_info)
         
@@ -203,7 +252,7 @@ class RAGSystem:
             return summary.strip()
             
         except Exception as e:
-            print(f"❌ Summarization failed: {e}")
+            print(f"ERROR: Summarization failed: {e}")
             return f"Failed to summarize text: {str(e)}"
     
     def generate_questions(self, text: str, num_questions: int = 3) -> List[str]:
@@ -229,7 +278,7 @@ class RAGSystem:
             return questions[:num_questions]
             
         except Exception as e:
-            print(f"❌ Question generation failed: {e}")
+            print(f"ERROR: Question generation failed: {e}")
             return [f"Failed to generate questions: {str(e)}"]
     
     def get_system_info(self) -> Dict[str, Any]:

@@ -4,14 +4,14 @@ A comprehensive Retrieval-Augmented Generation (RAG) system with a modern Next.j
 
 ## Features
 
-- Document Upload: Support for PDF, TXT, DOC, Markdown, and code files
-- AI-Powered Q&A: Ask questions about your documents with full context
-- Smart Retrieval: Vector-based similarity search for relevant content
-- Interactive Chat: Modern chat interface with source citations
-- Responsive Design: Beautiful Next.js frontend with Tailwind CSS
-- Fast API: FastAPI backend with real-time document processing
-- Multiple AI Providers: Support for Ollama (FREE), OpenAI, and Hugging Face
-- Free Embeddings: Local sentence-transformers for cost-free vector generation
+- **Document Upload**: Support for PDF, TXT, DOC, Markdown, and code files
+- **AI-Powered Q&A**: Ask questions about your documents with full context
+- **Smart Retrieval**: Vector-based similarity search for relevant content
+- **Interactive Chat**: Modern chat interface with source citations
+- **Responsive Design**: Beautiful Next.js frontend with Tailwind CSS
+- **Fast API**: FastAPI backend with real-time document processing
+- **Multiple AI Providers**: Support for Ollama (FREE), OpenAI, and Hugging Face
+- **Free Embeddings**: Local sentence-transformers for cost-free vector generation
 
 ## Architecture
 
@@ -43,34 +43,52 @@ RAG/
 └── README.md                # This File
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
-### 1. Get Your FREE Hugging Face API Token (FASTEST Option)
-1. Go to [Hugging Face](https://huggingface.co/)
-2. Sign up for a free account
-3. Go to [Settings → Access Tokens](https://huggingface.co/settings/tokens)
-4. Create a new token with "Read" permissions
-5. Copy the token
+### Prerequisites
 
-### 2. Set Up Environment Variables
-Create a `.env` file in the root directory (copy from `.env.example`):
-```bash
-# Copy the example file
-cp .env.example .env
+- Python 3.8 or higher
+- Node.js 16 or higher
+- Git
 
-# Edit .env and add your actual API key
-AI_PROVIDER=huggingface
-HUGGINGFACE_API_KEY=hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-EMBEDDING_PROVIDER=sentence-transformers
-```
+### Installation
 
-**⚠️ Security Note**: Never commit your `.env` file to Git! It's already in `.gitignore`.
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd RAG
+   ```
 
-**Note**: Hugging Face is 10-50x faster than Ollama and completely free!
+2. **Install Python dependencies**
+   ```bash
+   pip install -r requirements.txt
+   pip install -r backend/requirements.txt
+   ```
 
-### 3. Start the System
+3. **Install frontend dependencies**
+   ```bash
+   cd frontend
+   npm install
+   cd ..
+   ```
 
-You need 2 terminal windows:
+4. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+5. **Install and configure Ollama (recommended)**
+   ```bash
+   # Download from https://ollama.ai/download
+   # After installation:
+   ollama serve
+   ollama pull phi3:mini
+   ```
+
+### Running the System
+
+You need two terminal windows:
 
 **Terminal 1 (Backend):**
 ```bash
@@ -84,73 +102,33 @@ cd frontend
 npm run dev
 ```
 
-### 4. Access Your System
+### Access Points
 
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- API Documentation: http://localhost:8000/docs
-
-## How It Works
-
-### Document Processing Pipeline
-
-1. **Upload**: Drag & drop or select files through the web interface
-2. **Chunking**: Documents are split into smaller, manageable pieces (1000 characters by default)
-3. **Embedding**: Text chunks are converted to numerical vectors using sentence-transformers (FREE)
-4. **Storage**: Vectors are stored in ChromaDB for fast retrieval
-5. **Retrieval**: When you ask a question, relevant chunks are found using similarity search
-6. **Generation**: AI generates contextual answers using the retrieved information
-7. **Response**: You receive the answer with source citations
-
-### Step-by-Step Example
-
-**Scenario**: User wants to know about AI from a research paper
-
-1. **Document Upload**: User uploads AI_Research_Paper.pdf
-2. **Processing**: System chunks the document and creates embeddings
-3. **Question**: User asks "What are the main benefits of AI?"
-4. **Retrieval**: System finds the most relevant chunks about AI benefits
-5. **Generation**: AI generates answer using retrieved context
-6. **Display**: User sees answer + source citations
-
-## Technical Components
-
-### Frontend (Next.js)
-
-- **Document Upload**: Drag & drop interface with file preview
-- **Chat Interface**: Real-time Q&A with message history
-- **Document Management**: File organization and status tracking
-- **Settings Panel**: Configuration and system information
-- **Responsive Design**: Works on desktop and mobile devices
-
-### Backend (FastAPI)
-
-- **API Endpoints**: RESTful interface for all operations
-- **Document Processing**: Multi-format file handling
-- **RAG Integration**: Connects all system components
-- **Error Handling**: Robust error management and logging
-- **CORS Support**: Enables frontend-backend communication
-
-### RAG System (Python)
-
-- **Document Loader**: Processes PDF, TXT, DOC, Markdown, and code files
-- **Vector Store**: ChromaDB for efficient similarity search
-- **AI Provider**: Ollama (FREE), Hugging Face, or OpenAI integration
-- **Prompt Engineering**: Optimized prompts for RAG applications
-- **Text Chunking**: Intelligent document splitting with overlap
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
 
 ## Configuration
 
-### Environment Variables (.env)
+### Environment Variables
+
+Create a `.env` file in the root directory:
 
 ```env
-# AI Provider Selection
-AI_PROVIDER=huggingface
-HUGGINGFACE_API_KEY=your_hf_token_here
+# AI Provider Selection (ollama, huggingface, openai)
+AI_PROVIDER=ollama
 
-# Ollama Configuration
+# Ollama Configuration (FREE - Local)
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_MODEL=phi3:mini
+
+# Hugging Face Configuration (FREE - Cloud)
+HUGGINGFACE_API_KEY=your_hf_token_here
+HUGGINGFACE_MODEL=microsoft/DialoGPT-medium
+
+# OpenAI Configuration (PAID)
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-3.5-turbo
 
 # Embedding Configuration (FREE)
 EMBEDDING_PROVIDER=sentence-transformers
@@ -162,117 +140,102 @@ TOP_K_RESULTS=3
 TEMPERATURE=0.7
 ```
 
-### Available AI Models
+### AI Provider Comparison
 
-| Provider | Model | Cost | Speed | Best For |
-|----------|-------|------|-------|----------|
-| **Hugging Face** | DialoGPT-medium | FREE | **Very Fast** | Quick responses |
-| **Hugging Face** | T5-base | FREE | **Fast** | General RAG |
-| **Ollama** | phi3:mini | FREE | Slow | Local use only |
-| **Ollama** | llama2 | FREE | Very Slow | High quality (local) |
+| Provider | Cost | Speed | Privacy | Best For |
+|----------|------|-------|---------|----------|
+| **Ollama** | FREE | Medium | Local | Privacy-focused |
+| **Hugging Face** | FREE | Fast | Cloud | Quick setup |
+| **OpenAI** | PAID | Very Fast | Cloud | Production use |
+
+## How It Works
+
+### Document Processing Pipeline
+
+1. **Upload**: Documents are uploaded through the web interface
+2. **Chunking**: Documents are split into manageable pieces (default: 1000 characters)
+3. **Embedding**: Text chunks are converted to numerical vectors
+4. **Storage**: Vectors are stored in ChromaDB for fast retrieval
+5. **Retrieval**: Questions trigger similarity search for relevant chunks
+6. **Generation**: AI generates contextual answers using retrieved information
+7. **Response**: Users receive answers with source citations
+
+### Example Workflow
+
+**Scenario**: User uploads a research paper about artificial intelligence
+
+1. **Document Upload**: User uploads "AI_Research_Paper.pdf"
+2. **Processing**: System chunks the document and creates embeddings
+3. **Question**: User asks "What are the main benefits of AI?"
+4. **Retrieval**: System finds relevant chunks about AI benefits
+5. **Generation**: AI generates answer using retrieved context
+6. **Display**: User sees answer with source citations
 
 ## API Endpoints
 
-### Health & System
-- `GET /api/health` - System health check
-- `GET /api/system-info` - System configuration and status
+### System Health
+- `GET /api/health` - Check system status
+- `GET /api/system-info` - Get system configuration
 
 ### Document Management
 - `POST /api/upload` - Upload documents
 - `GET /api/documents` - List all documents
 - `DELETE /api/documents` - Clear all documents
+- `POST /api/sample-documents` - Load sample documents
 
-### Chat & Q&A
+### Chat Interface
 - `POST /api/chat` - Ask questions and get AI responses
 
 ## Testing the System
 
-### 1. Ask Questions
-
-```bash
-# Via API
-curl -X POST http://localhost:8000/api/chat \
-  -H "Content-Type: application/json" \
-  -d '{"question": "What is artificial intelligence?"}'
-
-# Via Frontend
-# Go to Chat tab → Type your question
-```
-
-### 2. Check System Health
+### Via API
 
 ```bash
 # Health check
 curl http://localhost:8000/api/health
 
-# System info
-curl http://localhost:8000/api/system-info
+# Ask a question
+curl -X POST http://localhost:8000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"question": "What is artificial intelligence?"}'
+
+# Upload a document
+curl -X POST http://localhost:8000/api/upload \
+  -F "files=@document.pdf"
 ```
 
-## Monitoring & Debugging
+### Via Frontend
 
-### Backend Logs
+1. Navigate to http://localhost:3000
+2. Upload documents using the upload interface
+3. Ask questions in the chat interface
+4. View source citations and document management
 
-Watch the backend terminal for:
-- System initialization messages
-- Document processing status
-- AI model responses
-- Error messages and stack traces
+## File Format Support
 
-### Frontend Console
+### Supported Formats
 
-Open browser DevTools to see:
-- API requests and responses
-- Frontend errors and warnings
-- Performance metrics
-- Network activity
+- **PDF**: Full text extraction with metadata
+- **Text Files**: .txt, .md, .py, .js, .html, .css
+- **Documents**: Microsoft Office formats (with additional dependencies)
+- **Code Files**: Various programming languages
 
-### API Documentation
+### Processing Features
 
-Visit http://localhost:8000/docs for:
-- Interactive API testing
-- Endpoint documentation
-- Request/response examples
-- Schema definitions
-
-## Common Issues & Solutions
-
-### 1. "Ollama not found"
-
-```bash
-# Install Ollama from https://ollama.ai/download
-# Restart computer after installation
-# Then run:
-ollama serve
-ollama pull phi3:mini
-```
-
-### 2. "Port already in use"
-
-```bash
-# Check what's using the port
-lsof -i :8000
-lsof -i :3000
-
-# Kill the process or use different ports
-```
-
-### 3. "Module not found"
-
-```bash
-# Reinstall dependencies
-pip install -r requirements.txt
-cd frontend && npm install
-```
-
-### 4. "Slow responses"
-
-- Use smaller AI models (phi3:mini instead of llama2)
-- Check if GPU acceleration is available
-- Ensure sufficient RAM (8GB+ recommended)
-- Use local embeddings instead of API calls
+- Automatic format detection
+- Text extraction and cleaning
+- Metadata preservation
+- Error handling for corrupted files
+- Progress tracking for large files
 
 ## Performance Optimization
+
+### Memory Management
+
+- Use smaller models for faster responses (phi3:mini vs llama2)
+- Adjust chunk sizes based on available memory
+- Monitor memory usage during operation
+- Regular cleanup of unused documents
 
 ### GPU Acceleration
 
@@ -283,57 +246,90 @@ For NVIDIA GPUs:
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 ```
 
-### Memory Optimization
-
-- Use smaller models for faster responses
-- Adjust chunk sizes based on available memory
-- Enable model quantization for Ollama models
-- Monitor memory usage during operation
-
 ### Storage Considerations
 
-- Vector embeddings are stored locally in ChromaDB
-- AI models are downloaded once and cached
-- Document chunks are stored as text for quick access
-- Regular cleanup of unused documents recommended
+- Vector embeddings stored locally in ChromaDB
+- AI models downloaded once and cached
+- Document chunks stored as text for quick access
+- Regular backup recommended for important data
 
-## Security Features
+## System Requirements
 
-- Local processing for sensitive documents
-- No data sent to external APIs (with Ollama)
-- Environment-based configuration
-- Input validation and sanitization
-- CORS configuration for frontend access
+### Minimum Requirements
 
-## File Format Support
+- **CPU**: Multi-core processor (Intel i5/AMD Ryzen 5 or equivalent)
+- **RAM**: 8GB minimum, 16GB recommended
+- **Storage**: 10GB free space for models and data
+- **OS**: Windows 10+, macOS 10.15+, or Linux
 
-### Supported Formats
+### Recommended Requirements
 
-- **PDF**: Full text extraction with PyPDF
-- **Text**: Plain text and markdown files
-- **Code**: Python, JavaScript, HTML, CSS, and more
-- **Documents**: Microsoft Office formats (if dependencies installed)
+- **CPU**: Intel i7/AMD Ryzen 7 or better
+- **RAM**: 16GB or more
+- **Storage**: 50GB+ free space for multiple models
+- **GPU**: NVIDIA GPU with CUDA support (optional but recommended)
 
-### Processing Capabilities
+## Troubleshooting
 
-- Automatic format detection
-- Text extraction and cleaning
-- Metadata preservation
-- Error handling for corrupted files
-- Progress tracking for large files
+### Common Issues
+
+1. **"Ollama not found"**
+   - Install Ollama from https://ollama.ai/download
+   - Restart computer after installation
+   - Run `ollama serve` and `ollama pull phi3:mini`
+
+2. **"Port already in use"**
+   - Check what's using the port: `netstat -an | findstr :8000`
+   - Kill the process or use different ports
+
+3. **"Module not found"**
+   - Reinstall dependencies: `pip install -r requirements.txt`
+   - For frontend: `cd frontend && npm install`
+
+4. **Slow responses**
+   - Use smaller AI models (phi3:mini instead of llama2)
+   - Ensure sufficient RAM (8GB+ recommended)
+   - Check if GPU acceleration is available
+
+### Debugging
+
+#### Backend Logs
+Monitor the backend terminal for:
+- System initialization messages
+- Document processing status
+- AI model responses
+- Error messages and stack traces
+
+#### Frontend Console
+Open browser DevTools to see:
+- API requests and responses
+- Frontend errors and warnings
+- Performance metrics
+- Network activity
 
 ## Development
 
-### Local Development
+### Local Development Setup
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/RAG.git
+git clone <repository-url>
 cd RAG
+
+# Create virtual environment (recommended)
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
-cd frontend && npm install
+pip install -r backend/requirements.txt
+
+# Install frontend dependencies
+cd frontend && npm install && cd ..
+
+# Set up environment
+cp .env.example .env
+# Edit .env with your configuration
 
 # Start development servers
 # Terminal 1: cd backend && python run.py
@@ -350,85 +346,19 @@ cd frontend && npm install
 
 ### Extending the System
 
-- Add new document formats in `backend/document_loader.py`
-- Implement new AI providers in `rag_system.py`
-- Create custom embedding models in `vector_store.py`
-- Add new API endpoints in `backend/main.py`
-- Extend frontend components in `frontend/components/`
+- **Add document formats**: Modify `backend/document_loader.py`
+- **Implement AI providers**: Update `rag_system.py`
+- **Create embedding models**: Extend `vector_store.py`
+- **Add API endpoints**: Update `backend/main.py`
+- **Extend frontend**: Add components in `frontend/components/`
 
-## System Requirements
+## Security Features
 
-### Minimum Requirements
-
-- **CPU**: Multi-core processor (Intel i5/AMD Ryzen 5 or better)
-- **RAM**: 8GB minimum, 16GB recommended
-- **Storage**: 10GB free space for models and data
-- **OS**: Windows 10+, macOS 10.15+, or Linux
-
-### Recommended Requirements
-
-- **CPU**: Intel i7/AMD Ryzen 7 or better
-- **RAM**: 16GB or more
-- **Storage**: 50GB+ free space for multiple models
-- **GPU**: NVIDIA GPU with CUDA support (optional)
-- **OS**: Latest stable version
-
-### Network Requirements
-
-- Internet connection for initial setup and model downloads
-- Local network access for frontend-backend communication
-- Optional: Stable connection for Hugging Face Hub models
-
-## Troubleshooting Guide
-
-### Startup Issues
-
-1. **Check Python version**: Ensure Python 3.8+ is installed
-2. **Verify dependencies**: Run `pip list` to check installed packages
-3. **Check ports**: Ensure ports 3000 and 8000 are available
-4. **Environment variables**: Verify .env file configuration
-
-### Runtime Issues
-
-1. **Memory errors**: Reduce chunk sizes or use smaller models
-2. **Slow performance**: Check GPU availability and model sizes
-3. **Connection errors**: Verify Ollama service is running
-4. **File upload issues**: Check file permissions and formats
-
-### AI Model Issues
-
-1. **Model not found**: Download required models with `ollama pull`
-2. **Poor responses**: Adjust temperature and other parameters
-3. **Slow generation**: Use smaller models or enable GPU acceleration
-4. **Context errors**: Check document chunking and retrieval settings
-
-## Success Indicators
-
-### When Everything Works
-
-1. Backend shows "RAG System initialized successfully"
-2. Frontend loads without errors
-3. Document upload completes successfully
-4. AI responds to questions with context
-5. Sources are properly cited
-6. Vector database shows document statistics
-
-### Performance Metrics
-
-- Document upload: Less than 30 seconds for typical files
-- Question response: Less than 10 seconds
-- Similarity search: Less than 2 seconds
-- Memory usage: Stable during operation
-- CPU usage: Reasonable for model size
-
-## Next Steps After Setup
-
-1. **Upload Your Documents**: Start with small files for testing
-2. **Ask Questions**: Begin with simple questions and test follow-ups
-3. **Customize Settings**: Adjust chunk sizes, models, and parameters
-4. **Scale Up**: Add more documents and experiment with different models
-5. **Integrate**: Connect with existing document management systems
-6. **Deploy**: Move to production environment with proper security
+- **Local processing** for sensitive documents (with Ollama)
+- **Environment-based configuration** for API keys
+- **Input validation** and sanitization
+- **CORS configuration** for secure frontend access
+- **No data persistence** in external APIs (local mode)
 
 ## Advanced Features
 
@@ -438,10 +368,11 @@ cd frontend && npm install
 # Create custom Ollama model
 ollama create mymodel -f Modelfile
 
-# Modelfile example:
+# Example Modelfile:
 FROM phi3:mini
 PARAMETER temperature 0.7
 PARAMETER top_p 0.9
+SYSTEM "You are a helpful assistant specialized in document analysis."
 ```
 
 ### Batch Processing
@@ -458,4 +389,62 @@ PARAMETER top_p 0.9
 - Migrate between different environments
 - Version control for document collections
 
-This RAG system provides a powerful, scalable solution for document-based question answering with AI. The modular architecture allows for easy customization and extension while maintaining high performance and reliability.
+## Production Deployment
+
+### Docker Deployment
+
+```dockerfile
+# Example Dockerfile for backend
+FROM python:3.9-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . .
+EXPOSE 8000
+
+CMD ["python", "backend/run.py"]
+```
+
+### Environment Configuration
+
+- Use environment-specific .env files
+- Configure proper CORS settings
+- Set up SSL/TLS certificates
+- Implement proper logging and monitoring
+
+### Scaling Considerations
+
+- Use Redis for session management
+- Implement database connection pooling
+- Set up load balancing for multiple instances
+- Monitor memory and CPU usage
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License. See LICENSE file for details.
+
+## Support
+
+For issues and questions:
+1. Check the troubleshooting section
+2. Review the API documentation at http://localhost:8000/docs
+3. Create an issue in the repository
+4. Check existing issues for solutions
+
+## Acknowledgments
+
+- Built with LangChain for RAG functionality
+- Uses ChromaDB for vector storage
+- Frontend powered by Next.js and Tailwind CSS
+- Backend built with FastAPI
+- AI models provided by Ollama, Hugging Face, and OpenAI

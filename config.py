@@ -1,10 +1,14 @@
 import os
 from dotenv import load_dotenv
-load_dotenv()
+from pathlib import Path
+
+# Load .env file from the current directory
+env_path = Path(__file__).parent / '.env'
+load_dotenv(env_path)
 
 class Config:
     # AI Provider Selection
-    AI_PROVIDER = os.getenv("AI_PROVIDER", "huggingface")  # ollama, openai, huggingface
+    AI_PROVIDER = os.getenv("AI_PROVIDER", "ollama")  # ollama, openai, huggingface
     
     # OpenAI Configuration (if using OpenAI)
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
@@ -16,7 +20,7 @@ class Config:
     
     # Hugging Face Configuration (FREE tier - FASTEST)
     HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY", "")
-    HUGGINGFACE_MODEL = os.getenv("HUGGINGFACE_MODEL", "microsoft/DialoGPT-medium")
+    HUGGINGFACE_MODEL = os.getenv("HUGGINGFACE_MODEL", "openai-community/gpt2")
     
     # Vector Database Configuration
     CHROMA_PERSIST_DIRECTORY = os.getenv("CHROMA_PERSIST_DIRECTORY", "./chroma_db")
@@ -24,7 +28,7 @@ class Config:
     # Document Processing
     CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 1000))
     CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", 200))
-    TOP_K_RESULTS = int(os.getenv("TOP_K_RESULTS", 3))
+    TOP_K_RESULTS = int(os.getenv("TOP_K_RESULTS", 1))  # Show only the most relevant source
     TEMPERATURE = float(os.getenv("TEMPERATURE", 0.7))
     
     # Embedding Configuration
@@ -49,7 +53,7 @@ class Config:
                 "model": cls.HUGGINGFACE_MODEL,
                 "is_free": True
             }
-        else:  # openai
+        elif cls.AI_PROVIDER == "openai":
             if not cls.OPENAI_API_KEY:
                 raise ValueError("OPENAI_API_KEY is required when using OpenAI provider")
             return {
@@ -58,6 +62,8 @@ class Config:
                 "model": cls.OPENAI_MODEL,
                 "is_free": False
             }
+        else:
+            raise ValueError(f"Unknown AI provider: {cls.AI_PROVIDER}")
     
     @classmethod
     def get_embedding_config(cls):

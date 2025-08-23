@@ -15,7 +15,7 @@ class VectorStore:
         embedding_config = self.config.get_embedding_config()
         
         if embedding_config["provider"] == "sentence-transformers":
-            print(f"🔍 Using free embeddings: {embedding_config['model']}")
+            print(f"INFO: Using free embeddings: {embedding_config['model']}")
             self.embeddings = HuggingFaceEmbeddings(
                 model_name=embedding_config["model"],
                 model_kwargs={'device': 'cpu'},  # Use CPU for compatibility
@@ -29,9 +29,9 @@ class VectorStore:
                     openai_api_key=self.config.OPENAI_API_KEY,
                     model="text-embedding-ada-002"
                 )
-                print("🔍 Using OpenAI embeddings")
+                print("INFO: Using OpenAI embeddings")
             except ImportError:
-                print("❌ OpenAI embeddings not available, falling back to sentence-transformers")
+                print("ERROR: OpenAI embeddings not available, falling back to sentence-transformers")
                 self.embeddings = HuggingFaceEmbeddings(
                     model_name="all-MiniLM-L6-v2",
                     model_kwargs={'device': 'cpu'},
@@ -45,9 +45,9 @@ class VectorStore:
                 embedding_function=self.embeddings,
                 collection_name="rag_documents"
             )
-            print(f"✅ Vector store initialized at: {self.persist_directory}")
+            print(f"SUCCESS: Vector store initialized at: {self.persist_directory}")
         except Exception as e:
-            print(f"❌ Failed to initialize vector store: {e}")
+            print(f"ERROR: Failed to initialize vector store: {e}")
             raise
     
     def add_documents(self, documents):
@@ -60,11 +60,11 @@ class VectorStore:
             self.db.add_documents(documents)
             self.db.persist()
             
-            print(f"✅ Added {len(documents)} documents to vector store")
+            print(f"SUCCESS: Added {len(documents)} documents to vector store")
             return True
             
         except Exception as e:
-            print(f"❌ Failed to add documents: {e}")
+            print(f"ERROR: Failed to add documents: {e}")
             return False
     
     def similarity_search(self, query, k=None):
@@ -74,11 +74,11 @@ class VectorStore:
                 k = self.config.TOP_K_RESULTS
             
             results = self.db.similarity_search(query, k=k)
-            print(f"🔍 Found {len(results)} relevant documents for query: '{query[:50]}...'")
+            print(f"INFO: Found {len(results)} relevant documents for query: '{query[:50]}...'")
             return results
             
         except Exception as e:
-            print(f"❌ Search failed: {e}")
+            print(f"ERROR: Search failed: {e}")
             return []
     
     def get_collection_stats(self):

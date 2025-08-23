@@ -35,7 +35,7 @@ vector_store = None
 
 class QueryRequest(BaseModel):
     question: str
-    k: Optional[int] = 3
+    k: Optional[int] = 1  # Show only the most relevant source
 
 class DocumentResponse(BaseModel):
     id: str
@@ -130,7 +130,7 @@ async def upload_documents(files: List[UploadFile] = File(...)):
             
             try:
                 # Process document with RAG system
-                documents = document_loader.load_file(tmp_file_path)
+                documents = document_loader.load_file(tmp_file_path, original_filename=file.filename)
                 
                 if documents:
                     # Add to vector store
